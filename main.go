@@ -1,0 +1,5 @@
+package mkdirTool
+
+func main{
+	
+}
