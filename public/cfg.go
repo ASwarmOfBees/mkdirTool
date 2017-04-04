@@ -71,7 +71,7 @@ func IgnoreDir(dir string, s State) bool {
 	lock.Lock()
 	defer lock.Unlock()
 
-	var result bool
+	result := false
 	if s == Wildcard {
 		reg := regexp.MustCompile(strings.Join(Config.IgoreFile, "|"))
 		result = reg.MatchString(dir)
@@ -83,13 +83,13 @@ func IgnoreDir(dir string, s State) bool {
 			case UnCaseSensitive:
 				result = strings.EqualFold(Config.IgoreDir[index], dir)
 				if result {
-					return true
+					break
 				}
 			}
 		}
 	}
 
-	return false
+	return result
 }
 
 //是否忽略文件
@@ -97,7 +97,7 @@ func IgnoreFile(file string, s State) bool {
 	lock.Lock()
 	defer lock.Unlock()
 
-	var result bool
+	result := false
 	if s == Wildcard {
 		reg := regexp.MustCompile(strings.Join(Config.IgoreFile, "|"))
 		result = reg.MatchString(file)
@@ -109,11 +109,11 @@ func IgnoreFile(file string, s State) bool {
 			case UnCaseSensitive:
 				result = strings.EqualFold(Config.IgoreFile[index], file)
 				if result {
-					return true
+					break
 				}
 			}
 		}
 	}
 
-	return false
+	return result
 }

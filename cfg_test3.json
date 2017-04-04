@@ -3,7 +3,7 @@
         "Hello world"
     ],
     "ignoreFile": [
-        "*.go"
+        ".*\\.go"
     ],
     "resultFile": "result.txt"
 }
