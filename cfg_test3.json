@@ -1,0 +1,9 @@
+{
+    "igoreDir": [
+        "Hello world"
+    ],
+    "ignoreFile": [
+        "*.go"
+    ],
+    "resultFile": "result.txt"
+}

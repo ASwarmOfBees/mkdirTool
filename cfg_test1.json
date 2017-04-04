@@ -1,0 +1,6 @@
+{
+    "ignoreFile": [
+        "for.go"
+    ],
+    "resultFile": "result.txt"
+}

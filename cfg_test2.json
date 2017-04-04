@@ -1,0 +1,6 @@
+{
+    "igoreDir": [
+       "Hello world"
+    ],
+    "resultFile": "result.txt"
+}
