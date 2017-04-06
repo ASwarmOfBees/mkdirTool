@@ -44,7 +44,7 @@ func WalkDir(dirPath string) error {
 
 		oneMessage = dirPath + "/" + fi.Name() + "," //文件名称
 		if public.IgnoreFile(fi.Name(), 2) == true {
-			fmt.Println(fmt.Sprintf("file \"%s\"ignore", oneMessage))
+			fmt.Println(fmt.Sprintf("file \"%s\" ignore", dirPath+"/"+fi.Name()))
 			continue
 		}
 
