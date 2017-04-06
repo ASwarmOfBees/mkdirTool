@@ -7,28 +7,60 @@ import (
 	"regexp"
 	"strings"
 	"sync"
+	"sync/atomic"
 
 	"mkdirTool/tool"
 	"mkdirTool/util"
 )
 
 type GlobalConfig struct {
-	IgoreFile []string `json:"ignoreFile"`
-	IgoreDir  []string `json:"igoreDir"`
-	SaveFile  string   `json:"resultFile"`
+	IgoreFile    []string `json:"ignoreFile"`
+	IgoreDir     []string `json:"igoreDir"`
+	SaveFile     string   `json:"resultFile"`
+	MaxGoroutine int32    `json:"maxGoroutine"`
+	Root         string   `json:"root"`
 }
 
 var (
 	ConfigFile string
 	Config     *GlobalConfig
 	lock       = new(sync.RWMutex)
+	WaitGroup  util.WaitGroupWrapper //异步线程
+	DirQueue   Queue                 //目录集合
+	GoCount    Goroutines            //当前线程数据
 )
 
-var WaitGroup util.WaitGroupWrapper //异步线程
-var DirQueue Queue                  //目录集合
+type Goroutines struct {
+	sync.RWMutex
+	Count  int32 //当前线程个数
+	Active int32 //真实活跃线程
+}
 
 func Init() {
 	DirQueue = Queue{dirs: list.New()}
+	atomic.StoreInt32(&GoCount.Count, 0)
+	atomic.StoreInt32(&GoCount.Active, 0)
+}
+
+//是否可以开启新线程
+func (g *Goroutines) IsArrowGoroutine() bool {
+	g.Lock()
+	defer g.Unlock()
+
+	if GoCount.Count < Config.MaxGoroutine {
+		atomic.AddInt32(&GoCount.Count, 1)
+		return true
+	}
+	return false
+}
+
+//新增一个活跃线程
+func (g *Goroutines) NewActive() int32 {
+	g.Lock()
+	defer g.Unlock()
+
+	atomic.AddInt32(&GoCount.Active, 1)
+	return GoCount.Active
 }
 
 //解析配置文件cfg.json

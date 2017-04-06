@@ -30,7 +30,7 @@ func main() {
 	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
 
 	public.WaitGroup.Wrap(func() {
-		_ = app.WalkDir("D:\\work\\go\\example")
+		_ = app.WalkDir(public.Config.Root, 0)
 	})
 
 	fmt.Println("File processing...")

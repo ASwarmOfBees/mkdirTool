@@ -13,7 +13,9 @@ import (
 )
 
 //获取指定目录及所有子目录下的所有文件，可以匹配后缀过滤。
-func WalkDir(dirPath string) error {
+func WalkDir(dirPath string, id int32) error {
+	fmt.Println(fmt.Sprintf("子线程：%d开始处理目录%s", id, dirPath))
+
 	var files []string
 
 	dir, err := ioutil.ReadDir(dirPath)
@@ -27,12 +29,14 @@ func WalkDir(dirPath string) error {
 			absolutePath := dirPath + "/" + fi.Name()
 			if public.IgnoreDir(fi.Name(), 2) == false {
 				public.DirQueue.Push(absolutePath)
-				public.WaitGroup.Wrap(func() {
-					if dirName := public.DirQueue.Pop(); dirName != nil {
-						dirStr := fmt.Sprintf("%s", dirName.Value)
-						WalkDir(dirStr)
-					}
-				})
+				if public.GoCount.IsArrowGoroutine() {
+					public.WaitGroup.Wrap(func() {
+						if dirName := public.DirQueue.Pop(); dirName != nil {
+							dirStr := fmt.Sprintf("%s", dirName.Value)
+							WalkDir(dirStr, public.GoCount.NewActive())
+						}
+					})
+				}
 			} else {
 				fmt.Println(fmt.Sprintf("directory \"%s\"ignore", absolutePath))
 			}
@@ -61,6 +65,12 @@ func WalkDir(dirPath string) error {
 
 		_, _ = tool.WriteFile(public.Config.SaveFile, messageStr)
 		fmt.Println(fmt.Sprintf("directory \"%s\" ergodic completed", dirPath))
+	}
+
+	//写完数据后  判断是否还有目录需要遍历
+	if dirName := public.DirQueue.Pop(); dirName != nil {
+		dirStr := fmt.Sprintf("%s", dirName.Value)
+		WalkDir(dirStr, id)
 	}
 
 	return nil

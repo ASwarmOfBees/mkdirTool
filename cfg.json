@@ -5,5 +5,7 @@
     "igoreDir": [
         "Hello world"
     ],
-    "resultFile": "result.txt"
+    "resultFile": "result.txt",
+	"maxGoroutine":10,
+	"root":"D:"
 }

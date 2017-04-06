@@ -2,5 +2,6 @@
     "ignoreFile": [
         "for.go"
     ],
-    "resultFile": "result.txt"
+    "resultFile": "result.txt",
+	"maxGoroutine":10
 }
